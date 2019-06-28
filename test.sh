@@ -1,16 +1,59 @@
 #!/bin/bash
 # Based on a post in 
 # https://stackoverflow.com/questions/33466130/linux-create-animated-gif-with-pan-and-zoom
+usage()
+{
+	cat <<EOF
+Usage: $0 -f filename -z zoom_factor -x x_center -y y_center -t gif_duration [-d delay] [-h show help]
 
-#TODO get those from arguments
-let zoom_factor=2
-x=75
-y=50
+OPTIONS:
+-h Show this message
+-f Name of the file to be parsed
+-z how much to zoom (divide the dimension by this argument)
+-x which x of the point to center to
+-y which y of the point to center to
+-t duration of the new gif
+-d delay of each frame of the gif in cs
+EOF
+}
+
+#default values
 filename=test.gif
+zoom_factor=2
+x=50
+y=50
 time=2
-#END TODO
+delay=0
 
-delay=$(identify -verbose -format "Frame %s: %Tcs | Duration: %[Iterations]\n" $filename | grep -P -o "(?<=Frame 0: )\d+")
+while getopts "hf:z:x:y:t:d:" OPTION; do
+	case $OPTION in
+		h) usage
+           exit
+			;;
+		f) filename=$OPTARG
+			;;
+		z) zoom_factor=$OPTARG
+			;;
+		x) x=$OPTARG
+			;;
+		y) y=$OPTARG
+			;;
+		t) time=$OPTARG
+			;;
+		d) delay=$OPTARG
+			;;
+	esac
+done
+
+
+if [[ $delay -eq 0 ]]; then
+	delay=$(identify -verbose -format "Frame %s: %Tcs | Duration: %[Iterations]\n" $filename | grep -P -o "(?<=Frame 0: )\d+")
+fi
+# if no delay has been set, revert to a default
+if [[ $delay -eq 0 ]]; then
+	delay=3
+fi
+
 steps=$(( time * 100 / delay))
 
 echo $steps
@@ -19,8 +62,6 @@ frames=$(identify $filename | wc -l)
 temp=$(identify -format "%[w] x %[h]\n" $filename)
 initw=$(echo $temp | grep -P -o  "[0-9^\t]+" | head -n 1)
 inith=$(echo $temp | grep -P -o  "[0-9^\t]+" | tail -n 1)
-
-
 
 
 # Initial & Final width
@@ -48,7 +89,7 @@ for i in $(seq 0 $steps); do
 done
 convert -delay $delay frame* anim.gif
 
-convert anim.gif -coalesce -scale 200x150 -fuzz 2% +dither -remap anim.gif[0] -layers Optimize result.gif
+convert anim.gif -coalesce -fuzz 2% +dither -remap anim.gif[0] -layers Optimize result.gif
 convert -rotate 90 result.gif result1.gif
 convert -rotate 180 result.gif result2.gif
 convert -rotate 270 result.gif result3.gif
