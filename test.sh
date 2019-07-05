@@ -89,14 +89,14 @@ convert -coalesce $filename out%d.jpeg
 # Remove anything from previous attempts
 rm frame-*jpg 2> /dev/null
 for i in $(seq 0 $steps); do
-   ((x=finalx*i/steps))
-   ((y=finaly*i/steps))
-   ((w=initw-(i*(initw-finalw)/steps)))
-   ((h=inith-(i*(inith-finalh)/steps)))
-   echo $i,$x,$y,$w,$h
-   name=$(printf "frame-%03d.jpg" $i)
-   let filenumber=$(($i%$frames))
-   convert out${filenumber}.jpeg -crop ${w}x${h}+${x}+${y} -resize ${initw}x${inith} "$name"
+    ((x=finalx*i/steps))
+    ((y=finaly*i/steps))
+    ((w=initw-(i*(initw-finalw)/steps)))
+    ((h=inith-(i*(inith-finalh)/steps)))
+    echo $i,$x,$y,$w,$h
+    name=$(printf "frame-%03d.jpg" $i)
+    let filenumber=$(($i%$frames))
+    convert out${filenumber}.jpeg -crop ${w}x${h}+${x}+${y} -resize ${initw}x${inith} "$name"
 done
 convert -delay $delay frame* anim.gif
 
