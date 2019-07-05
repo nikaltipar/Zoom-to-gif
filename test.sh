@@ -3,7 +3,7 @@
 # https://stackoverflow.com/questions/33466130/linux-create-animated-gif-with-pan-and-zoom
 usage()
 {
-	cat <<EOF
+    cat <<EOF
 Usage: $0 -f filename -z zoom_factor -x x_center -y y_center -t gif_duration [-d delay] [-h show help]
 
 OPTIONS:
@@ -26,32 +26,32 @@ time=2
 delay=0
 
 while getopts "hf:z:x:y:t:d:" OPTION; do
-	case $OPTION in
-		h) usage
+    case $OPTION in
+        h) usage
            exit
-			;;
-		f) filename=$OPTARG
-			;;
-		z) zoom_factor=$OPTARG
-			;;
-		x) x=$OPTARG
-			;;
-		y) y=$OPTARG
-			;;
-		t) time=$OPTARG
-			;;
-		d) delay=$OPTARG
-			;;
-	esac
+            ;;
+        f) filename=$OPTARG
+            ;;
+        z) zoom_factor=$OPTARG
+            ;;
+        x) x=$OPTARG
+            ;;
+        y) y=$OPTARG
+            ;;
+        t) time=$OPTARG
+            ;;
+        d) delay=$OPTARG
+            ;;
+    esac
 done
 
 
 if [[ $delay -eq 0 ]]; then
-	delay=$(identify -verbose -format "Frame %s: %Tcs | Duration: %[Iterations]\n" $filename | grep -P -o "(?<=Frame 0: )\d+")
+    delay=$(identify -verbose -format "Frame %s: %Tcs | Duration: %[Iterations]\n" $filename | grep -P -o "(?<=Frame 0: )\d+")
 fi
 # if no delay has been set, revert to a default
 if [[ $delay -eq 0 ]]; then
-	delay=3
+    delay=3
 fi
 
 steps=$(( time * 100 / delay))
@@ -77,11 +77,11 @@ finalx=$(( x - finalw / 2 ))
 finaly=$(( y - finalh / 2 ))
 
 if [[ $finalx -lt 0 ]]; then
-	finalx=0
+    finalx=0
 fi
 
 if [[ $finaly -lt 0 ]]; then
-	finaly=0
+    finaly=0
 fi
 
 convert -coalesce $filename out%d.jpeg
