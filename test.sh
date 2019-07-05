@@ -56,7 +56,6 @@ fi
 
 steps=$(( time * 100 / delay))
 
-echo $steps
 frames=$(identify $filename | wc -l)
 
 temp=$(identify -format "%[w] x %[h]\n" $filename)
@@ -68,10 +67,22 @@ inith=$(echo $temp | grep -P -o  "[0-9^\t]+" | tail -n 1)
 finalw=$(( initw / zoom_factor ))
 # Initial & Final height
 finalh=$(( inith / zoom_factor ))
+
+echo $finalw
+echo $finalh
+
 # Final x offset from top left
 finalx=$(( x - finalw / 2 ))
 # Final y offset from top left
 finaly=$(( y - finalh / 2 ))
+
+if [[ $finalx -lt 0 ]]; then
+	finalx=0
+fi
+
+if [[ $finaly -lt 0 ]]; then
+	finaly=0
+fi
 
 convert -coalesce $filename out%d.jpeg
 
